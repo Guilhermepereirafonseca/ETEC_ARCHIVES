@@ -1,0 +1,35 @@
+CREATE TABLE tabela_exemplo (
+
+    id SERIAL PRIMARY KEY,
+
+    nome VARCHAR(100) NOT NULL,
+
+    idade INTEGER NOT NULL
+
+);
+
+-- Inserindo dados
+INSERT INTO tabela_exemplo(nome, idade) VALUES ('Guilherme', 19)
+INSERT INTO tabela_exemplo(nome, idade) VALUES ('Edson', 27) 
+INSERT INTO tabela_exemplo(nome, idade) VALUES ('Gabriel', 19)
+INSERT INTO tabela_exemplo(nome, idade) VALUES ('Pedrinho', 20)
+
+-- Alterando o nome de uma pessoa
+UPDATE tabela_exemplo SET nome = 'Lucas' WHERE nome = 'Guilherme'
+/* Lembrando que o SET e o que eu quero inserir, e WHERE aonde ele será colocado */
+
+-- Deletando um item da tabela
+DELETE FROM tabela_exemplo WHERE nome = 'Edson'
+/* DELETE DE tabela_exemplo QUANDO nome = 'Edson' */
+DELETE FROM tabela_exemplo WHERE nome = 'joao'
+/* DELETE DE tabela_exemplo QUANDO nome = 'joao' */
+
+-- Exibindo apenas ID e NOME
+SELECT id, nome FROM tabela_exemplo
+/* SELECIONE id, nome DE tabela_exemplo */
+
+-- Alterando a tabela para inserir uma coluna
+ALTER TABLE tabela_exemplo
+ADD COLUMN data_de_nascimento VARCHAR(10);
+
+SELECT * from tabela_exemplo

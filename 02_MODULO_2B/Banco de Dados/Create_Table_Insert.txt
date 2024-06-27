@@ -1,0 +1,33 @@
+-- Criando a tabela TipoCliente
+CREATE TABLE TipoCliente (
+	id_tipo_Cliente SERIAL PRIMARY KEY,
+	nome_tipo_cliente VARCHAR(50)
+)
+
+-- Inserindo valores
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('Premium');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('PessoaFisica');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('PessoaJurídica');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('PessoaComum');
+
+-- Mostrando a tabela do TipoCliente
+SELECT * FROM TipoCliente
+
+-- Criando a tabela Cliente
+CREATE TABLE Cliente(
+	id_cliente_CPF VARCHAR(11),
+	telefone_Cliente VARCHAR(15),
+	nome_cliente VARCHAR(100),
+	endereco_cliente VARCHAR(255),
+	fk_TipoCliente_id_tipo_Cliente INTEGER,
+	FOREIGN KEY(fk_TipoCliente_id_tipo_Cliente) REFERENCES TipoCliente(id_tipo_Cliente)
+)
+
+-- Inserindo valores
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678900', '123456789', 'João Silva', 'Rua A, 123', 1);
+
+-- Esse insert tem um erro, o valor 9 não e um tipo valido de ID.
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678901', '123456789', 'João Silva', 'Rua A, 123', 9);
+
+-- Mostrando a tabela Cliente
+SELECT * FROM Cliente

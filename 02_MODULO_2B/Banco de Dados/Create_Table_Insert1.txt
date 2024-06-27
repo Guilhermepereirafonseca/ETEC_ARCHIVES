@@ -1,0 +1,25 @@
+CREATE TABLE TipoCliente (
+	id_tipo_Cliente SERIAL PRIMARY KEY,
+	nome_tipo_cliente VARCHAR(50)
+)
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('PessoaFisica');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('PessoaJurídica');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('VIP');
+
+SELECT * FROM TipoCliente
+
+CREATE TABLE Cliente (
+    id_cliente_CPF VARCHAR(11) PRIMARY KEY, 
+    telefone_Cliente VARCHAR(15),
+    nome_cliente VARCHAR(100),
+    endereco_cliente VARCHAR(255),
+    fk_TipoCliente_id_tipo_Cliente INTEGER,
+    FOREIGN KEY (fk_TipoCliente_id_tipo_Cliente) REFERENCES TipoCliente(id_tipo_Cliente)
+)
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678900', '123456789', 'Guilherme', 'Rua B, 345', 1);
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678901', '123456782', 'Joao', 'Rua B, 345', 2);
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678902', '123456784', 'Gabriel', 'Rua B, 345', 3);
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678903', '123456734', 'Bolsonaro', 'Rua B, 345', 4);
+INSERT INTO Cliente(id_cliente_CPF, telefone_Cliente, nome_cliente, endereco_cliente, fk_TipoCliente_id_tipo_Cliente) VALUES ('12345678904', '123456724', 'Claudia', 'Rua B, 345', 5);
+
+SELECT * FROM Cliente

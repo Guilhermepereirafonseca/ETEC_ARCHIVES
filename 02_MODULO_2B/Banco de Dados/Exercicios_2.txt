@@ -1,0 +1,168 @@
+-- Criação da tabela TipoCliente
+
+CREATE TABLE TipoCliente (
+
+    idTipo SERIAL PRIMARY KEY,
+
+    nomeTipo VARCHAR(50) NOT NULL
+
+);
+
+-- Exibindo
+SELECT * FROM TipoCliente
+
+-- Criação da tabela Cliente
+
+CREATE TABLE Cliente (
+
+    cpf VARCHAR(11) PRIMARY KEY,
+
+    nome VARCHAR(100) NOT NULL,
+
+    telefone VARCHAR(20),
+
+    idTipo INT,
+
+    FOREIGN KEY (idTipo) REFERENCES TipoCliente(idTipo)
+
+);
+
+-- Exibindo
+SELECT * FROM Cliente
+
+SELECT Cliente.nome AS NomeCliente, TipoCliente.nomeTipo AS TipoCliente FROM Cliente
+JOIN TipoCliente ON Cliente.idTipo = TipoCliente.idTipo;
+
+
+-- Criação da tabela TipoProduto
+
+CREATE TABLE TipoProduto (
+
+    idTipoProduto SERIAL PRIMARY KEY,
+
+    nomeTipoProduto VARCHAR(50) NOT NULL
+
+);
+
+SELECT * FROM TipoProduto
+
+-- Criação da tabela Produto
+
+CREATE TABLE Produto (
+
+    idProduto SERIAL PRIMARY KEY,
+
+    nomeProduto VARCHAR(100) NOT NULL,
+
+    preco DECIMAL(10, 2) NOT NULL,
+
+    idTipoProduto INT,
+
+    FOREIGN KEY (idTipoProduto) REFERENCES TipoProduto(idTipoProduto)
+
+);
+
+SELECT p.nomeProduto AS NomeProduto, tp.nomeTipoProduto AS TipoProduto FROM Produto p
+JOIN TipoProduto tp ON p.idTipoProduto = tp.idTipoProduto;
+
+SELECT * FROM Produto
+
+-- Criação da tabela Pedido
+
+CREATE TABLE Pedido (
+
+    idPedido SERIAL PRIMARY KEY,
+
+    cpfCliente VARCHAR(11),
+
+    dataPedido DATE NOT NULL,
+
+    valorTotal DECIMAL(10, 2),
+
+    FOREIGN KEY (cpfCliente) REFERENCES Cliente(cpf)
+
+);
+
+-- Criação da tabela ItemPedido
+
+CREATE TABLE ItemPedido (
+
+    idItemPedido SERIAL PRIMARY KEY,
+
+    idPedido INT,
+
+    idProduto INT,
+
+    quantidade INT NOT NULL,
+
+    precoUnitario DECIMAL(10, 2) NOT NULL,
+
+    valorTotal DECIMAL(10, 2) GENERATED ALWAYS AS (quantidade * precoUnitario) STORED,
+
+    FOREIGN KEY (idPedido) REFERENCES Pedido(idPedido),
+
+    FOREIGN KEY (idProduto) REFERENCES Produto(idProduto)
+
+);
+
+-- Inserir tipos de clientes
+
+INSERT INTO TipoCliente (nomeTipo) VALUES ('Regular');
+
+INSERT INTO TipoCliente (nomeTipo) VALUES ('VIP');
+
+-- Inserir clientes (CPF como identificador único)
+
+INSERT INTO Cliente (cpf, nome, telefone, idTipo) VALUES ('12345678901', 'João Silva', '123456789', 1);
+
+INSERT INTO Cliente (cpf, nome, telefone, idTipo) VALUES ('98765432100', 'Maria Santos', '987654321', 2);
+
+-- Inserir tipos de produtos
+
+INSERT INTO TipoProduto (nomeTipoProduto) VALUES ('Eletrônicos');
+
+INSERT INTO TipoProduto (nomeTipoProduto) VALUES ('Móveis');
+
+-- Inserir produtos
+
+INSERT INTO Produto (nomeProduto, preco, idTipoProduto) VALUES ('Smartphone', 1999.99, 1);
+
+INSERT INTO Produto (nomeProduto, preco, idTipoProduto) VALUES ('Sofá', 799.99, 2);
+
+-- Inserir pedido
+
+INSERT INTO Pedido (cpfCliente, dataPedido, valorTotal) VALUES ('12345678901', '2024-05-24', 0);
+
+-- Inserir itens do pedido
+
+INSERT INTO ItemPedido (idPedido, idProduto, quantidade, precoUnitario) 
+
+VALUES (1, 1, 1, 1999.99);
+----------------------------
+SELECT Pedido.idPedido, Cliente.nome AS NomeCliente, Pedido.dataPedido FROM Pedido
+JOIN Cliente ON Pedido.cpfCliente = Cliente.cpf;
+----------------------------
+SELECT c.nome AS NomeCliente, tc.nomeTipo AS TipoCliente
+FROM Cliente c
+JOIN TipoCliente tc ON c.idTipo = tc.idTipo;
+----------------------------
+SELECT pd.idpedido, c.nome, pd.valortotal
+FROM Pedido pd
+JOIN Cliente c ON pd.cpfCliente = c.cpf;
+---------------------------
+UPDATE Pedido
+SET valortotal = (SELECT SUM(valortotal) FROM ItemPedido WHERE idPedido = 1)
+WHERE idPedido = 1;
+--------------------------
+SELECT Cliente.nome, produto.nomeproduto, itempedido.quantidade, itempedido.valortotal
+FROM ItemPedido
+JOIN Pedido ON Itempedido.idpedido = pedido.idpedido
+JOIN Cliente ON pedido.cpfcliente = cliente.cpf
+JOIN Produto on Itempedido.idproduto = produto.idproduto
+--------------------------
+SELECT Pedido.idpedido, Cliente.nome AS NomeCliente, Produto.nomeProduto AS NomeProduto,
+	   itemPedido.quantidade, Itempedido.precounitario, itempedido.valortotal
+FROM Itempedido
+JOIN Pedido ON Itempedido.idpedido = pedido.idpedido
+JOIN Cliente ON Pedido.cpfCliente = Cliente.cpf
+JOIN Produto ON ItemPedido.idproduto = Produto.idProduto;

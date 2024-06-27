@@ -1,0 +1,61 @@
+CREATE TABLE IF NOT EXISTS TipoCliente (
+	id_tipo_Cliente SERIAL PRIMARY KEY,
+	nome_tipo_cliente VARCHAR(50)
+)
+
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('Premium');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('Regular');
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('Novo');
+
+-- Outra maneira de inserir dados usando (''),
+
+INSERT INTO TipoCliente(nome_tipo_cliente) VALUES ('Pessoa Fisica'),('Pessoa Juridica'),('10 anos');
+
+-- Listando
+
+SELECT * FROM TipoCliente
+
+-- Alterando, Stantard significa 'padrão', Where é 'onde'
+
+UPDATE TipoCliente SET nome_tipo_cliente = 'Stantard' WHERE id_tipo_cliente = 2;
+
+-- Deletando um item
+
+DELETE FROM TipoCliente WHERE id_tipo_cliente = 5;
+
+-- Deletando uma tabela
+
+DROP TABLE IF EXISTS TipoCliente;
+
+--------------------------------------
+
+-- CRIANDO OUTRA TABELA (EXERCICIO 1)
+
+CREATE TABLE IF NOT EXISTS Produto(
+	id_produto SERIAL PRIMARY KEY,
+	nome_produto VARCHAR(100) NOT NULL
+)
+
+INSERT INTO Produto (nome_produto) VALUES ('Produto A'),('Produto B'),('Produto C');
+
+SELECT * FROM Produto
+
+ALTER TABLE Produto ADD COLUMN preco_produto DECIMAL(10, 2);
+
+UPDATE Produto SET preco_produto = 10.99 WHERE nome_produto = 'Produto A';
+UPDATE Produto SET preco_produto = 8.99 WHERE nome_produto = 'Produto B';
+UPDATE Produto SET preco_produto = 12.00 WHERE nome_produto = 'Produto C';
+
+-- ASC = menor para maior | DESC = maior para menor 
+SELECT * FROM Produto ORDER BY id_produto ASC;
+
+ALTER TABLE Produto ADD COLUMN tipo_produto VARCHAR(10);
+
+-- Alterar o nome da coluna
+ALTER TABLE Produto RENAME COLUMN tipo_produto to nome_tipo_produto;
+
+-- Deletando a coluna
+ALTER TABLE Produto DROP COLUMN nome_tipo_produto;
+
+-- Mudando o nome da tabela
+ALTER TABLE Produto RENAME TO NovoProduto;

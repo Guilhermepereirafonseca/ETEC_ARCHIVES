@@ -1,0 +1,145 @@
+BEGIN;
+
+-- Tabela tipo_produto
+CREATE TABLE tipo_produto (
+
+    id SERIAL PRIMARY KEY,
+
+    nome VARCHAR(255) NOT NULL
+
+);
+
+INSERT INTO tipo_produto (nome) VALUES ('Limpeza'), ('Alimentos');
+SELECT * FROM tipo_produto
+
+-- Tabela produto
+CREATE TABLE produto (
+
+    id SERIAL PRIMARY KEY,
+
+    nome VARCHAR(255) NOT NULL,
+
+    preco NUMERIC(10, 2) NOT NULL,
+
+    tipo_produto_id INTEGER NOT NULL,
+
+    FOREIGN KEY (tipo_produto_id) REFERENCES tipo_produto(id)
+
+);
+
+
+-- Tabela tipo_cliente
+CREATE TABLE tipo_cliente (
+
+    id SERIAL PRIMARY KEY,
+
+    descricao VARCHAR(255) NOT NULL
+
+);
+
+INSERT INTO tipo_cliente (descricao) VALUES ('Regular')
+INSERT INTO tipo_cliente (descricao) VALUES ('VIP')
+INSERT INTO tipo_cliente (descricao) VALUES ('Corporativo')
+
+SELECT * FROM tipo_cliente
+
+-- Tabela cliente
+CREATE TABLE cliente (
+
+    id SERIAL PRIMARY KEY,
+
+    nome VARCHAR(255) NOT NULL,
+
+    tipo_cliente_id INTEGER NOT NULL,
+
+    FOREIGN KEY (tipo_cliente_id) REFERENCES tipo_cliente(id)
+
+);
+
+-- Sub Select
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('João', (SELECT id FROM tipo_cliente WHERE descricao = 'Regular'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Guilherme', (SELECT id FROM tipo_cliente WHERE descricao = 'Regular'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Gabriel', (SELECT id FROM tipo_cliente WHERE descricao = 'Regular'));
+
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Jean', (SELECT id FROM tipo_cliente WHERE descricao = 'VIP'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Carlos', (SELECT id FROM tipo_cliente WHERE descricao = 'VIP'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Susie', (SELECT id FROM tipo_cliente WHERE descricao = 'VIP'));
+
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Jessica', (SELECT id FROM tipo_cliente WHERE descricao = 'Corporativo'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Eduardo', (SELECT id FROM tipo_cliente WHERE descricao = 'Corporativo'));
+INSERT INTO cliente (nome, tipo_cliente_id) VALUES ('Fernando', (SELECT id FROM tipo_cliente WHERE descricao = 'Corporativo'));
+
+SELECT * FROM cliente
+
+-- Tabela venda
+CREATE TABLE venda (
+
+    id SERIAL PRIMARY KEY,
+
+    cliente_id INTEGER NOT NULL,
+
+    data_venda DATE NOT NULL,
+
+    total NUMERIC(10, 2) NOT NULL,
+
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id)
+
+);
+
+
+-- Tabela venda_produto
+CREATE TABLE venda_produto (
+
+    venda_id INTEGER NOT NULL,
+
+    produto_id INTEGER NOT NULL,
+
+    quantidade INTEGER NOT NULL,
+
+    PRIMARY KEY (venda_id, produto_id),
+
+    FOREIGN KEY (venda_id) REFERENCES venda(id),
+
+    FOREIGN KEY (produto_id) REFERENCES produto(id)
+
+);
+
+
+-- Função para calcular o total da venda
+CREATE OR REPLACE FUNCTION calcula_total_venda()
+
+RETURNS TRIGGER AS $$
+
+BEGIN
+
+    -- Atualiza o total da venda
+    UPDATE venda
+
+    SET total = (
+
+        SELECT COALESCE(SUM(p.preco * vp.quantidade), 0)
+
+        FROM venda_produto vp
+
+        JOIN produto p ON vp.produto_id = p.id
+
+        WHERE vp.venda_id = NEW.venda_id
+
+    )
+
+    WHERE id = NEW.venda_id;
+
+    RETURN NEW;
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+-- Trigger para calcular o total da venda após inserção ou atualização na tabela venda_produto
+CREATE TRIGGER atualiza_total_venda
+
+AFTER INSERT OR UPDATE ON venda_produto
+
+FOR EACH ROW EXECUTE FUNCTION calcula_total_venda();
+
+COMMIT;
